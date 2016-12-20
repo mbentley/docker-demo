@@ -3,7 +3,7 @@ version: "2"
 services:
   app:
     build: .
-    entrypoint: /bin/bash
+    entrypoint: /bin/sh
     command: -c "sleep 5 && go-wrapper run"
     environment:
       - "TITLE=Docker Demo"
