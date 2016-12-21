@@ -17,3 +17,6 @@ RUN go-wrapper install
 
 # instruct docker that port 8080 is used
 EXPOSE 8080
+
+# add default command
+CMD ["go-wrapper","run"]
