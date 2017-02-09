@@ -5,7 +5,7 @@ services:
     image: ${DTR_URL}/demo/docker-demo:${TAG}
     deploy:
       mode: replicated
-      replicas: ${REPLICAS}
+      replicas: 4
       update_config:
         parallelism: 2
         delay: 5s
