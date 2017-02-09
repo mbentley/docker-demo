@@ -12,6 +12,7 @@ services:
         failure_action: continue
       labels:
         - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT}.${DOMAIN_NAME}"
+        - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
     entrypoint: /bin/sh
     command: -c "sleep 5 && go-wrapper run"
     environment:
@@ -27,8 +28,6 @@ services:
       - ucp-hrm
     ports:
       - "8080"
-    labels:
-      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
   db:
     image: ${DTR_URL}/official/postgres:latest
     deploy:
@@ -37,6 +36,8 @@ services:
       placement:
         constraints:
           - "node.role == manager"
+      labels:
+        - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
     environment:
       - "POSTGRES_USER=${DB_USER}"
       - "POSTGRES_PASSWORD=${DB_PASS}"
@@ -44,8 +45,6 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - docker-demo
-    labels:
-      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
 
 volumes:
   postgres-data:
