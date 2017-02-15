@@ -1,4 +1,4 @@
-version: "3"
+version: "3.1"
 
 services:
   app:
@@ -13,16 +13,17 @@ services:
       labels:
         - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT}.${DOMAIN_NAME}"
         - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
-    entrypoint: /bin/sh
-    command: -c "sleep 5 && go-wrapper run"
     environment:
       - "TITLE=Docker Demo-${ENVIRONMENT}"
       - "DB_HOST=db"
       - "DB_PORT=5432"
-      - "DB_USER=${DB_USER}"
-      - "DB_PASS=${DB_PASS}"
       - "DB_NAME=${DB_NAME}"
       - "DB_SSL_MODE=disable"
+    secrets:
+      - source: DB_USER
+        target: DB_USER
+      - source: DB_PASS
+        target: DB_PASS
     networks:
       - docker-demo
       - ucp-hrm
@@ -55,3 +56,11 @@ networks:
     driver: overlay
   ucp-hrm:
     external: true
+
+secrets:
+  DB_USER:
+    external:
+      name: ${ENVIRONMENT}_DB_USER
+  DB_PASS:
+    external:
+      name: ${ENVIRONMENT}_DB_PASS

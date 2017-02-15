@@ -3,8 +3,7 @@ version: "2"
 services:
   app:
     image: ${DTR_URL}/demo/docker-demo:${TAG}
-    entrypoint: /bin/sh
-    command: -c "sleep 5 && go-wrapper run" # sleep because the postgres container isn't ready on first start
+    command: /bin/sh -c "sleep 5 && go-wrapper run"
     environment:
       - "TITLE=${TITLE}"
       - "DB_HOST=db"

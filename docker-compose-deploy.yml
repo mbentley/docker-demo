@@ -4,8 +4,7 @@ services:
   app:
     image: ${DTR_URL}/demo/docker-demo:${TAG}
     restart: always
-    entrypoint: /bin/sh
-    command: -c "sleep 5 && go-wrapper run" # sleep because the postgres container isn't ready on first start
+    command: /bin/sh -c "sleep 5 && go-wrapper run"
     environment:
       - "constraint:provider==${PROVIDER}"
       - "TITLE=Docker Demo-${ENVIRONMENT}"

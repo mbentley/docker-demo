@@ -18,5 +18,11 @@ RUN go-wrapper install
 # instruct docker that port 8080 is used
 EXPOSE 8080
 
+# add entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
+# add entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+
 # add default command
 CMD ["go-wrapper","run"]
