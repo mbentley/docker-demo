@@ -56,10 +56,14 @@ services:
 volumes:
   postgres-data:
     driver: local
+    labels:
+      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
 
 networks:
   docker-demo:
     driver: overlay
+    labels:
+      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
   ucp-hrm:
     external: true
 
