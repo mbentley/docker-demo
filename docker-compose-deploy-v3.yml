@@ -22,13 +22,13 @@ services:
     secrets:
       - source: DB_USER
         target: DB_USER
-        uid: 0
-        gid: 0
+        uid: "0"
+        gid: "0"
         mode: 0400
       - source: DB_PASS
         target: DB_PASS
-        uid: 0
-        gid: 0
+        uid: "0"
+        gid: "0"
         mode: 0400
     networks:
       - docker-demo
