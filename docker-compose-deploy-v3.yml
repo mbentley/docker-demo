@@ -46,8 +46,19 @@ services:
       labels:
         - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
     environment:
-      - "POSTGRES_USER=${DB_USER}"
-      - "POSTGRES_PASSWORD=${DB_PASS}"
+      - "POSTGRES_USER_FILE=/run/secrets/DB_USER"
+      - "POSTGRES_PASSWORD_FILE=/run/secrets/DB_PASS"
+    secrets:
+      - source: DB_USER
+        target: DB_USER
+        uid: "999"
+        gid: "999"
+        mode: 0400
+      - source: DB_PASS
+        target: DB_PASS
+        uid: "999"
+        gid: "999"
+        mode: 0400
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
