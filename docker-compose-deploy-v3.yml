@@ -33,8 +33,6 @@ services:
     networks:
       - docker-demo
       - ucp-hrm
-    ports:
-      - "8080"
   db:
     image: ${DTR_URL}/official/postgres:latest
     deploy:
