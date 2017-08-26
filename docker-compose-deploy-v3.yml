@@ -12,7 +12,7 @@ services:
         failure_action: continue
       labels:
         - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT}.${DOMAIN_NAME}"
-        - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
+        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
     environment:
       - "TITLE=Docker Demo-${ENVIRONMENT}"
       - "DB_HOST=db"
@@ -42,7 +42,7 @@ services:
         constraints:
           - "node.role == manager"
       labels:
-        - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
+        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
     environment:
       - "POSTGRES_USER_FILE=/run/secrets/DB_USER"
       - "POSTGRES_PASSWORD_FILE=/run/secrets/DB_PASS"
@@ -66,13 +66,13 @@ volumes:
   postgres-data:
     driver: local
     labels:
-      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
+      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
 
 networks:
   docker-demo:
     driver: overlay
     labels:
-      - "com.docker.ucp.access.label=${COMPOSE_PROJECT}"
+      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
   ucp-hrm:
     external: true
 
