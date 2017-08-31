@@ -3,7 +3,6 @@ version: "2"
 services:
   app:
     build: .
-    command: /bin/sh -c "sleep 5 && go-wrapper run"
     environment:
       - "TITLE=Docker Demo"
       - "DB_HOST=db"
