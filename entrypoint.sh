@@ -9,7 +9,7 @@ then
   for i in /run/secrets/*
   do
     echo "Exporting secret (${i}) to an env var..."
-    export "${i}"="$(cat /run/secrets/"${i}")"
+    export "${i}"="$(cat "${i}")"
   done
 else
   echo "No secrets found; assuming environment variables are being used"
