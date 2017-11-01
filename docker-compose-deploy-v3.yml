@@ -1,8 +1,8 @@
-version: "3.1"
+version: "3.3"
 
 services:
   app:
-    image: ${DTR_URL}/demo/docker-demo:${TAG}
+    image: ${DTR_URL:-dtr.demo.dckr.org}/demo/docker-demo:${TAG:-latest}
     deploy:
       mode: replicated
       replicas: 4
@@ -11,13 +11,13 @@ services:
         delay: 5s
         failure_action: continue
       labels:
-        - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT}.${DOMAIN_NAME}"
-        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
+        - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
+        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
     environment:
-      - "TITLE=Docker Demo-${ENVIRONMENT}"
+      - "TITLE=Docker Demo-${ENVIRONMENT:-dev}"
       - "DB_HOST=db"
       - "DB_PORT=5432"
-      - "DB_NAME=${DB_NAME}"
+      - "DB_NAME=${DB_NAME:-demo}"
       - "DB_SSL_MODE=disable"
     secrets:
       - source: DB_USER
@@ -34,7 +34,7 @@ services:
       - docker-demo
       - ucp-hrm
   db:
-    image: ${DTR_URL}/official/postgres:latest
+    image: ${DTR_URL:-dtr.demo.dckr.org}/official/postgres:latest
     deploy:
       mode: replicated
       replicas: 1
@@ -42,7 +42,7 @@ services:
         constraints:
           - "node.role == manager"
       labels:
-        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
+        - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
     environment:
       - "POSTGRES_USER_FILE=/run/secrets/DB_USER"
       - "POSTGRES_PASSWORD_FILE=/run/secrets/DB_PASS"
@@ -66,20 +66,20 @@ volumes:
   postgres-data:
     driver: local
     labels:
-      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
+      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
 
 networks:
   docker-demo:
     driver: overlay
     labels:
-      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT}"
+      - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
   ucp-hrm:
     external: true
 
 secrets:
   DB_USER:
     external:
-      name: ${ENVIRONMENT}_DB_USER
+      name: ${ENVIRONMENT:-dev}_DB_USER
   DB_PASS:
     external:
-      name: ${ENVIRONMENT}_DB_PASS
+      name: ${ENVIRONMENT:-dev}_DB_PASS
