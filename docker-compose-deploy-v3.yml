@@ -11,8 +11,11 @@ services:
         delay: 5s
         failure_action: continue
       labels:
-        - "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
+        #- "com.docker.ucp.mesh.http.8080=internal_port=8080,external_route=http://docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
         - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
+        - "com.docker.lb.hosts=docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
+        - "com.docker.lb.port=8080"
+        - "com.docker.lb.network=docker-demo-${ENVIRONMENT:-dev}_docker-demo"
     environment:
       - "TITLE=Docker Demo-${ENVIRONMENT:-dev}"
       - "DB_HOST=db"
