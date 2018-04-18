@@ -15,7 +15,7 @@ services:
         - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
         - "com.docker.lb.hosts=docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
         - "com.docker.lb.port=8080"
-        - "com.docker.lb.network=${COMPOSE_PROJECT_NAME}_docker-demo"
+        - "com.docker.lb.network=docker-demo-${ENVIRONMENT:-dev}_docker-demo"
     environment:
       - "TITLE=Docker Demo-${ENVIRONMENT:-dev}"
       - "DB_HOST=db"
@@ -35,7 +35,7 @@ services:
         mode: 0400
     networks:
       - docker-demo
-      - ucp-hrm
+      #- ucp-hrm
   db:
     image: ${DTR_URL:-dtr.demo.dckr.org}/official/postgres:latest
     deploy:
@@ -76,8 +76,8 @@ networks:
     driver: overlay
     labels:
       - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
-  ucp-hrm:
-    external: true
+  #ucp-hrm:
+  #  external: true
 
 secrets:
   DB_USER:
