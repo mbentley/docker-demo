@@ -3,6 +3,16 @@ kind: Namespace
 metadata:
   name: docker-demo-dev
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+  namespace: docker-demo-dev
+type: Opaque
+data:
+  username: ZGVtbw==
+  password: ZGVtbw==
+---
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
@@ -21,7 +31,10 @@ spec:
       containers:
         - name: app
           image: dtr.demo.dckr.org/demo/docker-demo:latest
-          #image: ehazlett/docker-demo:test
+          volumeMounts:
+            - name: mysecret
+              mountPath: "/etc/mysecrets"
+              readOnly: true
           env:
             - name: TITLE
               value: "docker-demo-dev"
@@ -35,8 +48,14 @@ spec:
               value: "demo"
             - name: DB_SSL_MODE
               value: "disable"
+            - name: SECRET_DIR
+              value: "/etc/mysecrets"
           ports:
             - containerPort: 8080
+      volumes:
+        - name: mysecret
+          secret:
+            secretName: mysecret
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---

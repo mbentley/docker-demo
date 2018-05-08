@@ -1,12 +1,15 @@
 #!/bin/sh
 
+# set the default secret directory for Swarm mode
+SECRET_DIR="${SECRET_DIR:-/run/secrets}"
+
 # check to see if secrets exist
-if [ -d "/run/secrets" ]
+if [ -d "${SECRET_DIR}" ]
 then
   echo "Found secrets"
 
   # export secrets to environment variables
-  for i in /run/secrets/*
+  for i in ${SECRET_DIR}/*
   do
     if [ ! -f "${i}" ]
     then
