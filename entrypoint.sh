@@ -8,8 +8,13 @@ then
   # export secrets to environment variables
   for i in /run/secrets/*
   do
-    echo "Exporting secret (${i}) to an env var..."
-    export "$(basename "${i}")"="$(cat "${i}")"
+    if [ ! -f "${i}" ]
+    then
+      echo "Skipping ${i}; not a file"
+    else
+      echo "Exporting secret (${i}) to an env var..."
+      export "$(basename "${i}")"="$(cat "${i}")"
+    fi
   done
 else
   echo "No secrets found; assuming environment variables are being used"
