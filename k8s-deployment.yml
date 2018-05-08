@@ -56,6 +56,7 @@ spec:
         - name: mysecret
           secret:
             secretName: mysecret
+            defaultMode: 0644
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
@@ -77,13 +78,22 @@ spec:
       containers:
         - name: db
           image: postgres:latest
+          volumeMounts:
+            - name: mysecret
+              mountPath: "/etc/mysecrets"
+              readOnly: true
           env:
-            - name: POSTGRES_USER
-              value: "demo"
-            - name: POSTGRES_PASSWORD
-              value: "demo"
+            - name: POSTGRES_USER_FILE
+              value: "/etc/mysecrets/username"
+            - name: POSTGRES_PASSWORD_FILE
+              value: "/etc/mysecrets/password"
           ports:
             - containerPort: 5432
+      volumes:
+        - name: mysecret
+          secret:
+            secretName: mysecret
+            defaultMode: 0644
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
