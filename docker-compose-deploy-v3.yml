@@ -16,7 +16,7 @@ services:
         - "com.docker.lb.port=8080"
         - "com.docker.lb.network=docker-demo-${ENVIRONMENT:-dev}_docker-demo"
     environment:
-      - "TITLE=Docker Demo-${ENVIRONMENT:-dev}"
+      - "TITLE=Docker Demo-${ENVIRONMENT:-dev} on Swarm mode"
       - "DB_HOST=db"
       - "DB_PORT=5432"
       - "DB_NAME=${DB_NAME:-demo}"
