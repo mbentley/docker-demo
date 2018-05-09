@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: docker-demo-dev
+  name: docker-demo-ENVIRONMENT
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: mysecret
-  namespace: docker-demo-dev
+  namespace: docker-demo-ENVIRONMENT
 type: Opaque
 data:
   username: ZGVtbw==
@@ -17,7 +17,7 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: app
-  namespace: docker-demo-dev
+  namespace: docker-demo-ENVIRONMENT
 spec:
   replicas: 4
   selector:
@@ -30,22 +30,19 @@ spec:
     spec:
       containers:
         - name: app
-          image: dtr.demo.dckr.org/demo/docker-demo:latest
+          image: DTR_URL/demo/docker-demo:TAG
+          imagePullPolicy: Always
           volumeMounts:
             - name: mysecret
               mountPath: "/etc/mysecrets"
               readOnly: true
           env:
             - name: TITLE
-              value: "docker-demo-dev"
+              value: "Docker Demo-ENVIRONMENT on k8s"
             - name: DB_HOST
               value: "db"
             - name: DB_PORT
               value: "5432"
-            - name: DB_USER
-              value: "demo"
-            - name: DB_PASS
-              value: "demo"
             - name: DB_SSL_MODE
               value: "disable"
             - name: SECRET_DIR
@@ -57,6 +54,11 @@ spec:
           secret:
             secretName: mysecret
             defaultMode: 0644
+            items:
+              - key: username
+                path: DB_USER
+              - key: password
+                path: DB_PASS
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
@@ -64,7 +66,7 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: db
-  namespace: docker-demo-dev
+  namespace: docker-demo-ENVIRONMENT
 spec:
   replicas: 1
   selector:
@@ -77,7 +79,8 @@ spec:
     spec:
       containers:
         - name: db
-          image: postgres:latest
+          image: DTR_URL/official/postgres:latest
+          imagePullPolicy: Always
           volumeMounts:
             - name: mysecret
               mountPath: "/etc/mysecrets"
@@ -101,7 +104,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: app
-  namespace: docker-demo-dev
+  namespace: docker-demo-ENVIRONMENT
 spec:
   selector:
     app: app
@@ -114,7 +117,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db
-  namespace: docker-demo-dev
+  namespace: docker-demo-ENVIRONMENT
 spec:
   selector:
     app: db
@@ -126,11 +129,11 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  namespace: docker-demo-dev
-  name: docker-demo-dev-ingress
+  namespace: docker-demo-ENVIRONMENT
+  name: docker-demo-ENVIRONMENT-ingress
 spec:
   rules:
-  - host: docker-demo-dev-k8s.demo.dckr.org
+  - host: docker-demo-ENVIRONMENT-k8s.demo.dckr.org
     http:
       paths:
       - path: /
