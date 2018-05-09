@@ -133,7 +133,7 @@ metadata:
   name: docker-demo-ENVIRONMENT-ingress
 spec:
   rules:
-  - host: docker-demo-ENVIRONMENT-k8s.demo.dckr.org
+  - host: docker-demo-ENVIRONMENT-k8s.DOMAIN_NAME
     http:
       paths:
       - path: /
