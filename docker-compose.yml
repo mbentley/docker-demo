@@ -16,8 +16,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./static:/go/src/app/static
-      - ./templates:/go/src/app/templates
+      - ./static:/app/static
+      - ./templates:/app/templates
   db:
     image: postgres:latest
     environment:
