@@ -85,6 +85,8 @@ spec:
             - name: mysecret
               mountPath: "/etc/mysecrets"
               readOnly: true
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
           env:
             - name: POSTGRES_USER_FILE
               value: "/etc/mysecrets/username"
@@ -97,8 +99,11 @@ spec:
           secret:
             secretName: mysecret
             defaultMode: 0644
+        - name: postgres-data
+          emptyDir: {}
       nodeSelector:
         beta.kubernetes.io/os: linux
+        node-role.kubernetes.io/master: ""
 ---
 apiVersion: v1
 kind: Service
