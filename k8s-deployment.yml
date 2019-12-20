@@ -100,7 +100,9 @@ spec:
             secretName: mysecret
             defaultMode: 0644
         - name: postgres-data
-          emptyDir: {}
+          hostPath:
+            path: /shared/postgres/ENVIRONMENT
+            type: DirectoryOrCreate
       nodeSelector:
         beta.kubernetes.io/os: linux
         node-role.kubernetes.io/master: ""
