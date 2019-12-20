@@ -13,7 +13,7 @@ data:
   username: ZGVtbw==
   password: ZGVtbw==
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app
@@ -62,7 +62,7 @@ spec:
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: db
@@ -133,7 +133,7 @@ spec:
     port: 5432
     targetPort: 5432
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   namespace: docker-demo-ENVIRONMENT
