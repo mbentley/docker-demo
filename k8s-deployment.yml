@@ -101,11 +101,10 @@ spec:
             defaultMode: 0644
         - name: postgres-data
           hostPath:
-            path: /shared/postgres/ENVIRONMENT
+            path: /shared/postgres/k8s/ENVIRONMENT
             type: DirectoryOrCreate
       nodeSelector:
         beta.kubernetes.io/os: linux
-        node-role.kubernetes.io/master: ""
 ---
 apiVersion: v1
 kind: Service
