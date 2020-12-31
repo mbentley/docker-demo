@@ -3,6 +3,18 @@ kind: Namespace
 metadata:
   name: docker-demo-ENVIRONMENT
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: docker-demo-ENVIRONMENT
+  name: docker-demo-storage-ENVIRONMENT
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 250Mi
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -100,9 +112,8 @@ spec:
             secretName: mysecret
             defaultMode: 0644
         - name: postgres-data
-          hostPath:
-            path: /shared/postgres/k8s/ENVIRONMENT
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: docker-demo-storage-ENVIRONMENT
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
