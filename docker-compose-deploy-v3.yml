@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   app:
-    image: ${DTR_URL:-dtr.demo.dckr.org}/demo/docker-demo:${TAG:-latest}
+    image: ${DTR_URL:-msr.work.mbentley.net}/demo/docker-demo:${TAG:-latest}
     deploy:
       mode: replicated
       replicas: 4
@@ -12,7 +12,7 @@ services:
         failure_action: continue
       labels:
         - "com.docker.ucp.access.label=/demo-collection/${ENVIRONMENT:-dev}"
-        - "com.docker.lb.hosts=docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-demo.dckr.org}"
+        - "com.docker.lb.hosts=docker-demo-${ENVIRONMENT:-dev}.${DOMAIN_NAME:-work.mbentley.net}"
         - "com.docker.lb.port=8080"
         - "com.docker.lb.network=docker-demo-${ENVIRONMENT:-dev}_docker-demo"
     environment:
@@ -35,7 +35,7 @@ services:
     networks:
       - docker-demo
   db:
-    image: ${DTR_URL:-dtr.demo.dckr.org}/official/postgres:latest
+    image: ${DTR_URL:-msr.work.mbentley.net}/official/postgres:latest
     deploy:
       mode: replicated
       replicas: 1
