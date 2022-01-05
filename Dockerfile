@@ -1,5 +1,5 @@
 # start with the official golang 1.8 image based on alpine
-FROM golang:1.8-alpine as build
+FROM golang:1.8-alpine AS build
 
 # create directory for our code & set as the working directory
 RUN mkdir -p /go/src/app
