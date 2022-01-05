@@ -1,19 +1,19 @@
-# start with the official golang 1.8 image based on alpine
-FROM golang:1.8-alpine AS build
+# start with the official golang 1.17 image based on alpine
+FROM golang:1.17-alpine AS build
 
 # create directory for our code & set as the working directory
 RUN mkdir -p /go/src/app
 WORKDIR /go/src/app
 
 # add source to the image
-COPY *.go /go/src/app/
+COPY go.mod go.sum *.go /go/src/app/
 COPY vendor /go/src/app/vendor/
 COPY static /go/src/app/static/
 COPY templates /go/src/app/templates/
 
 # pull dependencies and then build the app binary
-RUN go-wrapper download &&\
-  go-wrapper install
+RUN go get -v -d &&\
+  go install -v
 
 
 # now that our binary is built, let's start from a clean alpine image
