@@ -12,12 +12,14 @@ COPY static /go/src/app/static/
 COPY templates /go/src/app/templates/
 
 # pull dependencies and then build the app binary
-RUN go-wrapper download
-RUN go-wrapper install
+RUN go-wrapper download &&\
+  go-wrapper install
 
 
 # now that our binary is built, let's start from a clean alpine image
-FROM alpine:latest
+# rebased/repackaged base image that only updates existing packages
+FROM mbentley/alpine:latest
+LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
 
 # copy binary from build image
 COPY --from=build /go/bin/app /app/app
