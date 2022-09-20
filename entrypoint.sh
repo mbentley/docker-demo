@@ -9,7 +9,7 @@ then
   echo "Found secrets"
 
   # export secrets to environment variables
-  for i in ${SECRET_DIR}/*
+  for i in "${SECRET_DIR}"/*
   do
     if [ ! -f "${i}" ]
     then
@@ -24,7 +24,7 @@ else
 fi
 
 # check and see if postgres is running yet using nc
-while [ "$(nc -z -v -w1 db 5432 > /dev/null 2>&1; echo $?)" -ne "0" ]
+while [ "$(nc -z -v -w1 "${DB_HOST:-db}" "${DB_PORT:-5432}" > /dev/null 2>&1; echo $?)" -ne "0" ]
 do
   echo "Database not ready."
   sleep 2
