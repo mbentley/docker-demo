@@ -1,27 +1,18 @@
-# start with the official golang 1.17 image based on alpine
-FROM golang:1.17-alpine AS build
+# build stage: resolve deps and compile
+FROM golang:1.26-alpine AS build
 
-# create directory for our code & set as the working directory
-RUN mkdir -p /go/src/app
-WORKDIR /go/src/app
+WORKDIR /build
 
-# add source to the image
-COPY go.mod go.sum *.go /go/src/app/
-COPY vendor /go/src/app/vendor/
-COPY static /go/src/app/static/
-COPY templates /go/src/app/templates/
-
-# pull dependencies and then build the app binary
-RUN go get -v -d &&\
-  go install -v
+# copy source and module definition; go mod tidy resolves and pins deps at build time
+COPY go.mod *.go ./
+RUN go mod tidy && go build -o /go/bin/app .
 
 
-# now that our binary is built, let's start from a clean alpine image
-# rebased/repackaged base image that only updates existing packages
+# runtime stage: minimal alpine image
 FROM mbentley/alpine:latest
 LABEL maintainer="Matt Bentley <mbentley@mbentley.net>"
 
-# copy binary from build image
+# copy binary from build stage
 COPY --from=build /go/bin/app /app/app
 
 # copy static files, templates, and entrypoint script from build context
@@ -29,7 +20,6 @@ COPY static /app/static
 COPY templates /app/templates
 COPY entrypoint.sh /entrypoint.sh
 
-# set workding directory, entrypoint and command
 WORKDIR /app
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/app/app"]

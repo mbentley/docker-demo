@@ -72,7 +72,7 @@ spec:
               - key: password
                 path: DB_PASS
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -98,7 +98,7 @@ spec:
               mountPath: "/etc/mysecrets"
               readOnly: true
             - name: postgres-data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql
           env:
             - name: POSTGRES_USER_FILE
               value: "/etc/mysecrets/username"
@@ -115,7 +115,7 @@ spec:
           persistentVolumeClaim:
             claimName: docker-demo-storage-ENVIRONMENT
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
 ---
 apiVersion: v1
 kind: Service
@@ -143,7 +143,7 @@ spec:
     port: 5432
     targetPort: 5432
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: docker-demo-ENVIRONMENT
@@ -154,6 +154,9 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: app
-          servicePort: 8080
+          service:
+            name: app
+            port:
+              number: 8080

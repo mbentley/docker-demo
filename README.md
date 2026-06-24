@@ -10,18 +10,16 @@ This is a Go demo application with a PostgreSQL database used for demonstrating 
 
 ### Requirements
 
-- Install Docker ([https://docs.docker.com/installation/](https://docs.docker.com/installation/))
-
-- Install Docker Compose ([https://docs.docker.com/compose/](https://docs.docker.com/compose/))
+- Install Docker ([https://docs.docker.com/installation/](https://docs.docker.com/installation/)) — Docker Compose is included as a plugin with Docker Engine and Docker Desktop
 
 ### Build
 
-- `docker-compose build`
+- `docker compose build`
 
 ### Run
 
-- `docker-compose up`
+- `docker compose up`
 
 ### Cleanup
 
-- `docker-compose down -v --rmi local`
+- `docker compose down -v --rmi local`

@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"html/template"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -22,13 +22,11 @@ var (
 	DbSSLMode string
 )
 
-type (
-	Content struct {
-		Title    string
-		Hostname string
-		Entries  []*LogEntry
-	}
-)
+type Content struct {
+	Title    string
+	Hostname string
+	Entries  []*LogEntry
+}
 
 func init() {
 	flag.StringVar(&DbHost, "db-host", "", "database host")
@@ -46,23 +44,20 @@ func loadTemplate(filename string) (*template.Template, error) {
 func index(w http.ResponseWriter, r *http.Request) {
 	t, err := loadTemplate("templates/index.html.tmpl")
 	if err != nil {
-		fmt.Printf("error loading template: %s\n", err)
+		slog.Error("error loading template", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	title := os.Getenv("TITLE")
 
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = "unknown"
 	}
 
-	cnt := &Content{
-		Title:    title,
+	t.Execute(w, &Content{
+		Title:    os.Getenv("TITLE"),
 		Hostname: hostname,
-	}
-
-	t.Execute(w, cnt)
+	})
 }
 
 func dbIndex(w http.ResponseWriter, r *http.Request) {
@@ -71,13 +66,13 @@ func dbIndex(w http.ResponseWriter, r *http.Request) {
 		Addr: r.RemoteAddr,
 		Path: r.URL.Path,
 	})
+
 	t, err := loadTemplate("templates/db.html.tmpl")
 	if err != nil {
-		fmt.Printf("error loading template: %s\n", err)
+		slog.Error("error loading template", "error", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	title := os.Getenv("TITLE")
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -86,53 +81,41 @@ func dbIndex(w http.ResponseWriter, r *http.Request) {
 
 	entries, err := DS.GetAll()
 	if err != nil {
-		log.Printf("error retrieving data: %s\n", err)
+		slog.Error("error retrieving data", "error", err)
 	}
 
-	cnt := &Content{
-		Title:    title,
+	t.Execute(w, &Content{
+		Title:    os.Getenv("TITLE"),
 		Hostname: hostname,
 		Entries:  entries,
-	}
-
-	t.Execute(w, cnt)
+	})
 }
 
 func main() {
 	flag.Parse()
-	// load vars from env
+
 	if DbHost == "" {
-		//DbHost = os.Getenv("DB_PORT_5432_TCP_ADDR")
 		DbHost = os.Getenv("DB_HOST")
 	}
-
 	if DbPort == 0 {
-		//port := os.Getenv("DB_PORT_5432_TCP_PORT")
-		port := os.Getenv("DB_PORT")
-		if port != "" {
+		if port := os.Getenv("DB_PORT"); port != "" {
 			p, err := strconv.Atoi(port)
 			if err != nil {
 				log.Fatalf("unable to parse database port: %s", err)
 			}
-
 			DbPort = p
 		}
 	}
-
 	if DbUser == "" {
 		DbUser = os.Getenv("DB_USER")
 	}
-
 	if DbPass == "" {
 		DbPass = os.Getenv("DB_PASS")
 	}
-
 	if DbName == "" {
 		DbName = os.Getenv("DB_NAME")
 	}
-
-	sslMode := os.Getenv("DB_SSL_MODE")
-	if sslMode != "" && DbSSLMode == "" {
+	if sslMode := os.Getenv("DB_SSL_MODE"); sslMode != "" && DbSSLMode == "" {
 		DbSSLMode = sslMode
 	}
 
@@ -140,17 +123,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to connect to datastore: %s", err)
 	}
-
 	DS = ds
 	defer DS.Close()
 
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	mux.HandleFunc("/", index)
-	mux.HandleFunc("/db", dbIndex)
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(os.DirFS("./static"))))
+	mux.HandleFunc("GET /", index)
+	mux.HandleFunc("GET /db", dbIndex)
 
-	log.Println("listening on :8080")
-
+	slog.Info("listening", "addr", ":8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
-		fmt.Errorf("error serving: %s", err)
+		log.Fatalf("error serving: %s", err)
 	}
 }

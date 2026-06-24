@@ -1,17 +1,17 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type (
 	Datastore struct {
-		db *sql.DB
+		pool *pgxpool.Pool
 	}
 
 	LogEntry struct {
@@ -21,61 +21,53 @@ type (
 	}
 )
 
-func NewDatastore(host string, port int, username string, password string, dbName string, dbSSLMode string) (*Datastore, error) {
+func NewDatastore(host string, port int, username, password, dbName, dbSSLMode string) (*Datastore, error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", username, password, host, port, dbName, dbSSLMode)
-	db, err := sql.Open("postgres", dsn)
+	pool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		return nil, err
 	}
-	ds := &Datastore{
-		db: db,
-	}
+	ds := &Datastore{pool: pool}
 	ds.init()
 	return ds, nil
 }
 
 func (ds *Datastore) init() {
-	if _, err := ds.db.Exec(`create table if not exists logs (date timestamp without time zone, addr varchar(64), path varchar(256));`); err != nil {
-		log.Printf("unable to initdb: %s\n", err)
+	if _, err := ds.pool.Exec(context.Background(), `create table if not exists logs (date timestamp without time zone, addr varchar(64), path varchar(256));`); err != nil {
+		slog.Error("unable to initdb", "error", err)
 	}
 }
 
 func (ds *Datastore) Add(logEntry *LogEntry) error {
-	ts := logEntry.Date.Format(time.RFC3339)
-	if _, err := ds.db.Exec(`insert into logs (date, addr, path) values ($1, $2, $3)`, ts, logEntry.Addr, logEntry.Path); err != nil {
+	if _, err := ds.pool.Exec(context.Background(), `insert into logs (date, addr, path) values ($1, $2, $3)`, logEntry.Date, logEntry.Addr, logEntry.Path); err != nil {
 		return err
 	}
-	log.Printf("added entry %s %s\n", ts, logEntry.Path)
+	slog.Info("added entry", "timestamp", logEntry.Date.Format(time.RFC3339), "path", logEntry.Path)
 	return nil
 }
 
 func (ds *Datastore) GetAll() ([]*LogEntry, error) {
-	logs := []*LogEntry{}
-
-	rows, err := ds.db.Query(`select * from logs;`)
+	rows, err := ds.pool.Query(context.Background(), `select date, addr, path from logs`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+	var logs []*LogEntry
 	for rows.Next() {
-		var entry = LogEntry{}
-		var date time.Time
-		var addr, path string
-		if err := rows.Scan(&date, &addr, &path); err != nil {
+		var entry LogEntry
+		if err := rows.Scan(&entry.Date, &entry.Addr, &entry.Path); err != nil {
 			return nil, err
 		}
-
-		entry.Date = date
-		entry.Addr = addr
-		entry.Path = path
-
 		logs = append(logs, &entry)
 	}
-	log.Printf("retrieved %d entries\n", len(logs))
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	slog.Info("retrieved entries", "count", len(logs))
 	return logs, nil
 }
 
 func (ds *Datastore) Close() {
-	ds.db.Close()
+	ds.pool.Close()
 }

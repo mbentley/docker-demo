@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   app:
     image: ${DTR_URL:-msr.mirantis.work.mbentley.net}/demo/docker-demo:${TAG:-latest}
@@ -56,7 +54,7 @@ services:
         gid: "999"
         mode: 0400
     volumes:
-      - /shared/postgres/swarm/${ENVIRONMENT:-dev}:/var/lib/postgresql/data
+      - /shared/postgres/swarm/${ENVIRONMENT:-dev}:/var/lib/postgresql
     networks:
       - docker-demo
 
