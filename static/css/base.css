@@ -1,23 +1,206 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 html, body {
-    background: #d7d7d7;
-    color: #5e5e5e;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f1923;
+    color: #e8eaed;
 }
-.title {
-    font-size: 38pt;
+
+/* ── Navigation ─────────────────────────────────────────── */
+
+nav {
+    background: #0d1b2a;
+    border-bottom: 2px solid #2496ED;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    gap: 1rem;
 }
-.info {
-    font-size: 12pt;
-    color: #7e7e7e;
+
+nav .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: #e8eaed;
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex: 1;
 }
-div.content {
-    margin: 2% auto 0 auto;
-    width: 100%;
+
+nav .brand img {
+    height: 26px;
+    width: auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 0.25rem;
+}
+
+nav ul a {
+    display: block;
+    padding: 0.375rem 0.875rem;
+    color: #8b9ab1;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: color 0.15s, background 0.15s;
+}
+
+nav ul a:hover {
+    color: #e8eaed;
+    background: #1a2a3a;
+}
+
+nav ul a.active {
+    color: #2496ED;
+    background: #112233;
+}
+
+/* ── Page wrapper ────────────────────────────────────────── */
+
+.page {
+    padding: 2.5rem 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+/* ── Hero card (index) ───────────────────────────────────── */
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    padding: 3.5rem 2rem;
+    background: #1a2a3a;
+    border: 1px solid #2a3a4a;
+    border-radius: 8px;
+    margin-top: 0.5rem;
 }
-div.logs {
-    margin: 0 35% 0 35%;
-    width: 30%;
-    border: 1px solid #7a7a7a;
-    height: 175px;
-    overflow-y: scroll;
+
+.hero img {
+    max-width: 280px;
+    width: 100%;
+    margin-bottom: 2rem;
+    opacity: 0.92;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #e8eaed;
+    margin-bottom: 1rem;
+}
+
+.hero .hostname {
+    font-size: 0.8rem;
+    color: #8b9ab1;
+    background: #0f1923;
+    border: 1px solid #2a3a4a;
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.02em;
+}
+
+/* ── DB log page ─────────────────────────────────────────── */
+
+.db-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.db-header h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #e8eaed;
+}
+
+.db-header .count {
+    font-size: 0.75rem;
+    color: #8b9ab1;
+    background: #1a2a3a;
+    border: 1px solid #2a3a4a;
+    border-radius: 20px;
+    padding: 0.2rem 0.75rem;
+}
+
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+    background: #1a2a3a;
+    border: 1px solid #2a3a4a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.log-table thead tr {
+    background: #0d1b2a;
+    border-bottom: 1px solid #2496ED;
+}
+
+.log-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8b9ab1;
+}
+
+.log-table tbody tr {
+    border-bottom: 1px solid #1e2e3e;
+    transition: background 0.1s;
+}
+
+.log-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.log-table tbody tr:hover {
+    background: #1e3045;
+}
+
+.log-table td {
+    padding: 0.6rem 1rem;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+}
+
+.log-table .col-num  { color: #4a6a8a; width: 3rem; text-align: right; }
+.log-table .col-date { color: #2496ED; }
+.log-table .col-addr { color: #c8d4e0; }
+.log-table .col-path { color: #7ec8a0; }
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #8b9ab1;
+    font-size: 0.875rem;
+    background: #1a2a3a;
+    border: 1px solid #2a3a4a;
+    border-radius: 8px;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+
+footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #4a5a6a;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
 }

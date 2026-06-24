@@ -15,6 +15,7 @@ type (
 	}
 
 	LogEntry struct {
+		Num  int
 		Date time.Time
 		Addr string
 		Path string
@@ -47,7 +48,7 @@ func (ds *Datastore) Add(logEntry *LogEntry) error {
 }
 
 func (ds *Datastore) GetAll() ([]*LogEntry, error) {
-	rows, err := ds.pool.Query(context.Background(), `select date, addr, path from logs`)
+	rows, err := ds.pool.Query(context.Background(), `select row_number() over (order by date asc) as num, date, addr, path from logs order by date desc limit 100`)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func (ds *Datastore) GetAll() ([]*LogEntry, error) {
 	var logs []*LogEntry
 	for rows.Next() {
 		var entry LogEntry
-		if err := rows.Scan(&entry.Date, &entry.Addr, &entry.Path); err != nil {
+		if err := rows.Scan(&entry.Num, &entry.Date, &entry.Addr, &entry.Path); err != nil {
 			return nil, err
 		}
 		logs = append(logs, &entry)
