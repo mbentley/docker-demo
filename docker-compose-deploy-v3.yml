@@ -33,7 +33,7 @@ services:
     networks:
       - docker-demo
   db:
-    image: ${DTR_URL:-msr.mirantis.work.mbentley.net}/official/postgres:latest
+    image: ${DTR_URL:-msr.mirantis.work.mbentley.net}/official/postgres:18-alpine
     deploy:
       mode: replicated
       replicas: 1

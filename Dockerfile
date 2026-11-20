@@ -3,9 +3,13 @@ FROM golang:1.26-alpine AS build
 
 WORKDIR /build
 
-# copy source and module definition; go mod tidy resolves and pins deps at build time
-COPY go.mod *.go ./
-RUN go mod tidy && go build -o /go/bin/app .
+# download pinned deps first so this layer is cached until go.mod/go.sum change
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+# copy source and compile
+COPY *.go ./
+RUN go build -o /go/bin/app .
 
 
 # runtime stage: minimal alpine image

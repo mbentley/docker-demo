@@ -91,7 +91,7 @@ spec:
     spec:
       containers:
         - name: db
-          image: DTR_URL/official/postgres:latest
+          image: DTR_URL/official/postgres:18-alpine
           imagePullPolicy: Always
           volumeMounts:
             - name: mysecret

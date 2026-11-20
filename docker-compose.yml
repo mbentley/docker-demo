@@ -17,7 +17,7 @@ services:
       - ./static:/app/static
       - ./templates:/app/templates
   db:
-    image: postgres:latest
+    image: postgres:18-alpine
     environment:
       - "POSTGRES_USER=demo"
       - "POSTGRES_PASSWORD=demo"
